@@ -1,0 +1,55 @@
+**/result*
+**/*.png
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+*/.venv/
+*/venv/
+*/env/
+
+# Virtual environment binaries and executables
+**/bin/
+**/Scripts/
+**/lib/
+**/lib64/
+**/include/
+**/share/
+**/*.exe
+**/*.dll
+**/*.so
+**/*.dylib
+
+# Python dependency caches and package metadata
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+
+# Python environment/config files
+.python-version
+.venv.*
+.env
+.env.*
+
+# Common package manager outputs
+site-packages/
+.eggs/
+*.egg-info/
+.eggs/
+.dist/
+build/
+dist/
+
+# IDE/editor local metadata
+.vscode/
+.idea/
+
