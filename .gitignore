@@ -53,3 +53,5 @@ dist/
 .vscode/
 .idea/
 
+**/results/**
+**.png

@@ -27,7 +27,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=adam_lrate)
 
 # 3. PONTOS DE COLOCAÇÃO (Collocation Points)
 # Pontos internos no domínio [0, 2] onde avaliamos o resíduo da ODE
-N_f = 100
+N_f = 1000
 t_f = np.linspace(t_min, t_max, N_f).reshape(-1, 1)
 t_f_tf = tf.convert_to_tensor(t_f, dtype=tf.float32)
 
@@ -56,21 +56,27 @@ def compute_loss(model, t_f, t_0, y_0):
     # Loss Total
     return loss_init + loss_physics, loss_init, loss_physics
 
-# 5. Loop de Treinamento
+# 5. Passo de treinamento compilado pelo TensorFlow
 epochs = 5000
 loss_history = []
 
-for epoch in range(epochs):
+@tf.function
+def train_step():
     with tf.GradientTape() as tape:
-        total_loss, loss_init, loss_phys = compute_loss(pinn, t_f_tf, t_0_tf, y_0_tf)
-    
+        total_loss, loss_init, loss_phys = compute_loss(
+            pinn, t_f_tf, t_0_tf, y_0_tf
+        )
+
     grads = tape.gradient(total_loss, pinn.trainable_variables)
     optimizer.apply_gradients(zip(grads, pinn.trainable_variables))
-    
-    #loss_history.append(total_loss.numpy())
-    
+    return total_loss, loss_init, loss_phys
+
+
+# 6. Loop de Treinamento
+for epoch in range(epochs):
+    total_loss, loss_init, loss_phys = train_step()
+
     if epoch % 500 == 0:
-        # print(f"Epoch {epoch:4d} | Total Loss: {total_loss.numpy():.6f} | IC Loss: {loss_init.numpy():.6f} | Physics Loss: {loss_phys.numpy():.6f}")
         total_loss_value = float(total_loss)
         loss_init_value = float(loss_init)
         loss_phys_value = float(loss_phys)
@@ -79,11 +85,11 @@ for epoch in range(epochs):
             f"IC Loss: {loss_init_value:.6f} | "
             f"Physics Loss: {loss_phys_value:.6f}"
         )
-        
-    if epoch % 10 == 0:
-        loss_history.append(total_loss.numpy())
 
-# 6. Avaliação e Plotagens
+    if epoch % 10 == 0:
+        loss_history.append(float(total_loss))
+
+# 7. Avaliação e Plotagens
 t_test = np.linspace(t_min, t_max, 200).reshape(-1, 1)
 t_test_tf = tf.convert_to_tensor(t_test, dtype=tf.float32)
 

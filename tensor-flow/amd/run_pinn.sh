@@ -3,7 +3,7 @@
 # Requisitos: ROCm 7.0.2 + Ubuntu 24.04 (Python 3.12)
 
 # Definir o nome do diretório do ambiente virtual (padrão: pinn_env)
-VENV_DIR="pinn_env"
+VENV_DIR="pinn_tf_env"
 
 if [ -d "$VENV_DIR" ]; then
     echo "=========================================================="
@@ -16,14 +16,25 @@ else
     exit 1
 fi
 
+ROCM_PATH="${ROCM_PATH:-/opt/rocm}"
+export LD_LIBRARY_PATH="$ROCM_PATH/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+if [ ! -e "$ROCM_PATH/lib/librocprofiler-register.so.0" ]; then
+    echo "Erro: librocprofiler-register.so.0 não está disponível em $ROCM_PATH/lib."
+    echo "Alinhe o pacote ROCm com a versão ativa usando:"
+    echo "  sudo apt update && sudo apt install --reinstall rocprofiler-register"
+    exit 1
+fi
+
 # Configuração de Override para a GPU AMD RX 6600 (Navi 23 -> gfx1032)
 # Faz com que as bibliotecas do ROCm simulem uma arquitetura gfx1030 (RX 6800) compatível.
 echo "Aplicando HSA_OVERRIDE_GFX_VERSION=10.3.0 para compatibilidade..."
 export HSA_OVERRIDE_GFX_VERSION=10.3.0
 
-# Se você possuir duas GPUs (NVIDIA + AMD) e quiser isolar a execução apenas na GPU AMD,
-# você pode descomentar a linha abaixo:
-# export CUDA_VISIBLE_DEVICES=""
+# Remova o bloqueio do CUDA_VISIBLE_DEVICES se ele estiver exportado no seu shell
+unset CUDA_VISIBLE_DEVICES
+# O ROCm enumera a RX 6600 como dispositivo HIP 0; a NVIDIA não é um agente HIP.
+export HIP_VISIBLE_DEVICES=0
 
 # Verifica se o usuário passou algum arquivo python como argumento
 if [ -z "$1" ]; then
