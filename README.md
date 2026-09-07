@@ -115,8 +115,7 @@ python3.12 -m venv pinn_cuda_env
 source pinn_cuda_env/bin/activate
 python -m pip install --upgrade pip
 python -m pip install numpy matplotlib
-python -m pip install torch torchvision torchaudio \
-    --index-url https://download.pytorch.org/whl/cu130
+python -m pip install -r requirements.txt 
 ```
 
 Confirme que o PyTorch reconhece a RTX 3070:
