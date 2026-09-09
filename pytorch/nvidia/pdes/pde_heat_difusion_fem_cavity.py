@@ -16,8 +16,6 @@ Lx = 1.0
 Ly = 1.0
 k = 1
 q = 1
-nx = 100
-ny = 100
 As = Lx * Ly
 Ac = 0.1 * As
 
@@ -99,7 +97,9 @@ def triangle_matrices(coordinates, conductivity, source):
 	return stiffness, load
 
 
-def solve_heat_equation(h0,l0):
+def solve_heat_equation(h0,l0, mesh_ref):
+	nx = mesh_ref
+	ny = mesh_ref
 	nodes, elements, cavity_bounds = build_mesh(Lx, Ly, nx, ny,h0,l0)
 	system = lil_matrix((len(nodes), len(nodes)), dtype=np.float64)
 	load = np.zeros(len(nodes), dtype=np.float64)
@@ -183,9 +183,10 @@ def save_temperature_plot(
 	axis.set_box_aspect(1)
 	figure.tight_layout()
 
+
+	timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
 	output_directory = Path(__file__).resolve().parent / "results/cavity" / dir 
 	output_directory.mkdir(parents=True, exist_ok=True)
-	timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
 	output_path = output_directory / f"resultado_cavity_h0l0_{name}_{timestamp}.png"
 	figure.savefig(output_path, dpi=150, bbox_inches="tight")
 	plt.close(figure)
@@ -193,8 +194,13 @@ def save_temperature_plot(
 
 
 def solve_dofs_h0l0():
-	H0L0s = [.125, .25, .5, 1, 2, 4, 6, 8, 10]
-	results_directory = Path(__file__).resolve().parent / "results/cavity/h0l0s"
+	mesh_ref = 50
+	H0L0s = [.125, .25, .5, 1, 2, 4, 6, 8, 9.25]
+
+	timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
+	dirname = f"h0l0_{timestamp}"
+
+	results_directory = Path(__file__).resolve().parent / "results/cavity" / dirname 
 	results_directory.mkdir(parents=True, exist_ok=True)
 	csv_path = results_directory / "temperatura_maxima_h0l0.csv"
 	results = []
@@ -202,12 +208,13 @@ def solve_dofs_h0l0():
 	for H0L0 in H0L0s:
 		H0 = np.sqrt(Ac * H0L0)
 		L0 = np.sqrt(Ac / H0L0)
-		mesh_nodes, mesh_elements, temperature, cavity, cavity_bounds = solve_heat_equation(H0,L0)
+		mesh_nodes, mesh_elements, temperature, cavity, cavity_bounds = solve_heat_equation(H0,L0, mesh_ref)
 		maximum_temperature_node = int(np.argmax(temperature))
 		temperature_max = float(temperature[maximum_temperature_node])
 		results.append((H0L0, temperature_max))
+
 		output_file = save_temperature_plot(
-			mesh_nodes, mesh_elements, temperature, cavity_bounds, f"dofs_{H0L0}", "h0l0s", .5
+			mesh_nodes, mesh_elements, temperature, cavity_bounds, f"dofs_{H0L0}", dirname, .5
 		)
 		print(f"H0L0: {H0L0} ")
 		print(f"Nos: {len(mesh_nodes)} | Elementos: {len(mesh_elements)}")
