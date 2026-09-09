@@ -48,6 +48,7 @@ site-packages/
 .dist/
 build/
 dist/
+**.cache**
 
 # IDE/editor local metadata
 .vscode/

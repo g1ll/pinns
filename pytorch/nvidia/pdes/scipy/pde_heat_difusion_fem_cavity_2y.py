@@ -352,17 +352,18 @@ def solve_dofs_2y(mesh, dofs,fis):
 
 if __name__ == "__main__":
 	mesh = 250
-	# Forma em T para verificacao de malha
-	# H0L0 = 20
-	# alpha = 0.0
-	# beta = 0.0
-	# s1_h0 = 0.45
-	# fi1 = 0.02
-	# fi2 = 0.02
-	# fi3 = 0.02
-	# h1_l1 = 14.0
-	# h2_l2 = 0.14
-	# Forma otima para 1dof a=b
+	# Case 1 - Forma em T para verificacao de malha
+	H0L0 = 20
+	alpha = 0.0
+	beta = 0.0
+	s1_h0 = 0.45
+	fi1 = 0.02
+	fi2 = 0.02
+	fi3 = 0.02
+	h1_l1 = 14.0
+	h2_l2 = 0.14
+ 
+	# Case 2 - Forma otima para 1dof a=b
 	H0L0 = 10
 	alpha = 13.687500
 	beta = alpha
