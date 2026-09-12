@@ -1,0 +1,20 @@
+name: pinns-fenicx
+channels:
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.12
+  - fenics-dolfinx=0.11.*
+  - mpich
+  - petsc
+  - slepc
+  - mpi4py
+  - numpy
+  - scipy
+  - matplotlib
+  - gmsh
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.1

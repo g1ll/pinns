@@ -1,0 +1,40 @@
+[project]
+name = "pinns-nvidia"
+version = "0.1.0"
+description = "PINNs and heat-transfer FEM comparisons with SciPy and modern FEniCSx"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "numpy>=1.26,<3",
+  "scipy>=1.13,<2",
+  "matplotlib>=3.8,<4",
+  "gmsh>=4.12,<5",
+]
+
+[dependency-groups]
+cuda = [
+  "torch==2.14.0",
+  "triton==3.8.0",
+]
+
+[project.optional-dependencies]
+cuda = [
+  "torch==2.14.0",
+  "triton==3.8.0",
+]
+
+[project.scripts]
+fenicsx-numpy = "pdes.fenicx.pde_heat_difusion_fem_cavity_2y_numpy:main"
+fenicsx-gmsh = "pdes.fenicx.pde_heat_difusion_fem_cavity_2y_gmsh:main"
+
+[tool.uv]
+# dolfinx, petsc4py and mpi4py are native dependencies installed by Conda/system.
+# uv manages the portable Python and CUDA dependencies above.
+default-groups = ["cuda"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pdes"]
